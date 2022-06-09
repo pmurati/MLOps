@@ -34,6 +34,9 @@ def data_load(config_path: Text) -> None:
             rev = config['data_load']['version']
         )
         dataset = pd.read_csv(data_url, sep=',')
+
+        mlflow.log_param('data_url',data_url)
+        mlflow.log_param('version',config['data_load']['version'])
     else:
         data = load_iris(as_frame=True)
 

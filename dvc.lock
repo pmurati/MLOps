@@ -4,8 +4,8 @@ stages:
     cmd: python -m src.stages.data_load --config=params.yaml
     deps:
     - path: src/stages/data_load.py
-      md5: a59268b43583b3d2d1b48c09bdc9a6d3
-      size: 1653
+      md5: b1787d24a1a09f355ade9e8ef1bf9cb1
+      size: 1770
     params:
       params.yaml:
         base:
@@ -124,7 +124,7 @@ stages:
           model_path: models/model.joblib
     outs:
     - path: models/model.joblib
-      md5: 9c5bf32dda707bacca0028ff85261848
+      md5: 50407bc6d3ee41300c433ca717839f32
       size: 2668
   evaluate:
     cmd: python -m src.stages.evaluate --config=params.yaml
@@ -133,7 +133,7 @@ stages:
       md5: b5e45593a772fc66629488e1806505c4
       size: 1523
     - path: models/model.joblib
-      md5: 9c5bf32dda707bacca0028ff85261848
+      md5: 50407bc6d3ee41300c433ca717839f32
       size: 2668
     - path: src/stages/evaluate.py
       md5: ec76ace21f48fde5efe234a7bafce5a8
