@@ -1,5 +1,7 @@
 [core]
     analytics = false
     remote = dvc-remote
+[cache]
+    dir = /tmp/MLOPs-dvc-remote-cache
 ['remote "dvc-remote"']
     url = /tmp/MLOps-dvc-remote-storage
