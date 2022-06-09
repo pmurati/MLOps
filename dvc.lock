@@ -1,0 +1,153 @@
+schema: '2.0'
+stages:
+  data_load:
+    cmd: python -m src.stages.data_load --config=params.yaml
+    deps:
+    - path: src/stages/data_load.py
+      md5: 0285fdf069975a70eae1b9f84dba88ac
+      size: 1189
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+          project_experiment_name: DEMO_EXPERIMENT
+        data_load:
+          dataset_csv: data/raw/iris.csv
+    outs:
+    - path: data/raw/iris.csv
+      md5: 4224576f0267bf88902f87f0f6200967
+      size: 2908
+  featurize:
+    cmd: python -m src.stages.featurize --config=params.yaml
+    deps:
+    - path: data/raw/iris.csv
+      md5: 4224576f0267bf88902f87f0f6200967
+      size: 2908
+    - path: src/stages/featurize.py
+      md5: f25b21b5861c48cecfde7448aa364aa8
+      size: 1483
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+          project_experiment_name: DEMO_EXPERIMENT
+        data_load:
+          dataset_csv: data/raw/iris.csv
+        featurize:
+          features_path: data/processed/featured_iris.csv
+          target_column: target
+    outs:
+    - path: data/processed/featured_iris.csv
+      md5: 5d03a1564b3038fc35a842f8e4bde491
+      size: 7411
+  data_split:
+    cmd: python -m src.stages.data_split --config=params.yaml
+    deps:
+    - path: data/processed/featured_iris.csv
+      md5: 5d03a1564b3038fc35a842f8e4bde491
+      size: 7411
+    - path: src/stages/data_split.py
+      md5: 6e06c1313f1b4a5737d4bacec93a7b25
+      size: 1503
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+          project_experiment_name: DEMO_EXPERIMENT
+        data_split:
+          test_size: 0.2
+          trainset_path: data/processed/train_iris.csv
+          testset_path: data/processed/test_iris.csv
+        featurize:
+          features_path: data/processed/featured_iris.csv
+          target_column: target
+    outs:
+    - path: data/processed/test_iris.csv
+      md5: b5e45593a772fc66629488e1806505c4
+      size: 1523
+    - path: data/processed/train_iris.csv
+      md5: ed8a7e5ba0a211251bdee6c498fe3eb4
+      size: 5845
+  train:
+    cmd: python -m src.stages.train --config=params.yaml
+    deps:
+    - path: data/processed/train_iris.csv
+      md5: ed8a7e5ba0a211251bdee6c498fe3eb4
+      size: 5845
+    - path: src/stages/train.py
+      md5: b35db7642c6da7ae684d064d1de86506
+      size: 1685
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+          project_experiment_name: DEMO_EXPERIMENT
+        data_split.trainset_path: data/processed/train_iris.csv
+        featurize.target_column: target
+        train:
+          cv: 3
+          estimator_name: logreg
+          estimators:
+            logreg:
+              param_grid:
+                C:
+                - 0.001
+                max_iter:
+                - 100
+                solver:
+                - lbfgs
+                multi_class:
+                - multinomial
+            svm:
+              param_grid:
+                C:
+                - 0.1
+                - 1.0
+                kernel:
+                - rbf
+                - linear
+                gamma:
+                - scale
+                degree:
+                - 3
+                - 5
+          model_path: models/model.joblib
+    outs:
+    - path: models/model.joblib
+      md5: 8f8e42ec28adb9b8720e995b981776db
+      size: 2668
+  evaluate:
+    cmd: python -m src.stages.evaluate --config=params.yaml
+    deps:
+    - path: data/processed/test_iris.csv
+      md5: b5e45593a772fc66629488e1806505c4
+      size: 1523
+    - path: models/model.joblib
+      md5: 8f8e42ec28adb9b8720e995b981776db
+      size: 2668
+    - path: src/stages/evaluate.py
+      md5: ec76ace21f48fde5efe234a7bafce5a8
+      size: 2625
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+          log_level: INFO
+          project_experiment_name: DEMO_EXPERIMENT
+        data_split.testset_path: data/processed/test_iris.csv
+        evaluate:
+          reports_dir: reports
+          metrics_file: metrics.json
+          confusion_matrix_image: confusion_matrix.png
+        featurize.target_column: target
+    outs:
+    - path: reports/confusion_matrix.png
+      md5: 688c03cfa2e33407ca10db2f49e57769
+      size: 24999
+    - path: reports/metrics.json
+      md5: d533847a0ca14ca93752b1b1f1df349e
+      size: 32
