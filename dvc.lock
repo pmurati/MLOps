@@ -4,8 +4,8 @@ stages:
     cmd: python -m src.stages.data_load --config=params.yaml
     deps:
     - path: src/stages/data_load.py
-      md5: 0285fdf069975a70eae1b9f84dba88ac
-      size: 1189
+      md5: a59268b43583b3d2d1b48c09bdc9a6d3
+      size: 1653
     params:
       params.yaml:
         base:
@@ -14,6 +14,9 @@ stages:
           project_experiment_name: DEMO_EXPERIMENT
         data_load:
           dataset_csv: data/raw/iris.csv
+          revision_on: true
+          version: V1
+          repo: C:/Users/dev410/OneDrive - DEVnet GmbH/Dokumente/MLOps
     outs:
     - path: data/raw/iris.csv
       md5: 4224576f0267bf88902f87f0f6200967
@@ -35,6 +38,9 @@ stages:
           project_experiment_name: DEMO_EXPERIMENT
         data_load:
           dataset_csv: data/raw/iris.csv
+          revision_on: true
+          version: V1
+          repo: C:/Users/dev410/OneDrive - DEVnet GmbH/Dokumente/MLOps
         featurize:
           features_path: data/processed/featured_iris.csv
           target_column: target
@@ -118,7 +124,7 @@ stages:
           model_path: models/model.joblib
     outs:
     - path: models/model.joblib
-      md5: 8f8e42ec28adb9b8720e995b981776db
+      md5: 9c5bf32dda707bacca0028ff85261848
       size: 2668
   evaluate:
     cmd: python -m src.stages.evaluate --config=params.yaml
@@ -127,7 +133,7 @@ stages:
       md5: b5e45593a772fc66629488e1806505c4
       size: 1523
     - path: models/model.joblib
-      md5: 8f8e42ec28adb9b8720e995b981776db
+      md5: 9c5bf32dda707bacca0028ff85261848
       size: 2668
     - path: src/stages/evaluate.py
       md5: ec76ace21f48fde5efe234a7bafce5a8

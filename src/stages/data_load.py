@@ -2,7 +2,10 @@ import argparse
 from sklearn.datasets import load_iris
 from typing import Text
 import yaml
+
+import pandas as pd
 import mlflow
+import dvc.api
 
 from src.utils.logs import get_logger
 from src.utils.mlflow_run_decorator import mlflow_run
@@ -21,12 +24,24 @@ def data_load(config_path: Text) -> None:
     logger = get_logger('DATA_LOAD', log_level=config['base']['log_level'])
 
     logger.info('Get dataset')
-    data = load_iris(as_frame=True)
-    dataset = data.frame
-    dataset.rename(
-        columns=lambda colname: colname.strip(' (cm)').replace(' ', '_'),
-        inplace=True
-    )
+
+    if config['data_load']['revision_on']:
+
+        logger.info('Grab dataset version {}'.format(config['data_load']['version']))
+        data_url = dvc.api.get_url(
+            path = config['data_load']['dataset_csv'],
+            repo = config['data_load']['repo'],
+            rev = config['data_load']['version']
+        )
+        dataset = pd.read_csv(data_url, sep=',')
+    else:
+        data = load_iris(as_frame=True)
+
+        dataset = data.frame
+        dataset.rename(
+            columns=lambda colname: colname.strip(' (cm)').replace(' ', '_'),
+            inplace=True
+        )
 
     logger.info('Save raw data')
     dataset.to_csv(config['data_load']['dataset_csv'], index=False)
