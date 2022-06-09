@@ -14,7 +14,7 @@ stages:
           project_experiment_name: DEMO_EXPERIMENT
         data_load:
           dataset_csv: data/raw/iris.csv
-          revision_on: true
+          revision_on: false
           version: V1
           repo: C:/Users/dev410/OneDrive - DEVnet GmbH/Dokumente/MLOps
     outs:
@@ -38,7 +38,7 @@ stages:
           project_experiment_name: DEMO_EXPERIMENT
         data_load:
           dataset_csv: data/raw/iris.csv
-          revision_on: true
+          revision_on: false
           version: V1
           repo: C:/Users/dev410/OneDrive - DEVnet GmbH/Dokumente/MLOps
         featurize:
@@ -84,8 +84,8 @@ stages:
       md5: ed8a7e5ba0a211251bdee6c498fe3eb4
       size: 5845
     - path: src/stages/train.py
-      md5: b35db7642c6da7ae684d064d1de86506
-      size: 1685
+      md5: e371ce4d221cb613f83f2b66b83be2a7
+      size: 1736
     params:
       params.yaml:
         base:
@@ -124,7 +124,7 @@ stages:
           model_path: models/model.joblib
     outs:
     - path: models/model.joblib
-      md5: 50407bc6d3ee41300c433ca717839f32
+      md5: bb4eb084b4385a7aa6cd77270af8e4d4
       size: 2668
   evaluate:
     cmd: python -m src.stages.evaluate --config=params.yaml
@@ -133,7 +133,7 @@ stages:
       md5: b5e45593a772fc66629488e1806505c4
       size: 1523
     - path: models/model.joblib
-      md5: 50407bc6d3ee41300c433ca717839f32
+      md5: bb4eb084b4385a7aa6cd77270af8e4d4
       size: 2668
     - path: src/stages/evaluate.py
       md5: ec76ace21f48fde5efe234a7bafce5a8

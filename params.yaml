@@ -7,7 +7,7 @@ base:
 
 data_load:
   dataset_csv: 'data/raw/iris.csv'
-  revision_on: True
+  revision_on: False
   version: 'V1'
   repo: 'C:/Users/dev410/OneDrive - DEVnet GmbH/Dokumente/MLOps'
 

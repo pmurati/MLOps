@@ -43,9 +43,11 @@ def train_model(config_path: Text) -> None:
     models_path = config['train']['model_path']
     joblib.dump(model, models_path)
 
-    mlflow.log_param('chosen_estimator',model.best_estimator_)
-    mlflow.log_param('parametrization',model.best_params_)
-    mlflow.log_metric('F1',model.best_score_)
+    mlflow.log_param('chosen_estimator', model.best_estimator_)
+    mlflow.log_param('parametrization', model.best_params_)
+    mlflow.log_metric('F1', model.best_score_)
+
+    mlflow.sklearn.log_model(model, 'model')
     
 
 if __name__ == '__main__':
