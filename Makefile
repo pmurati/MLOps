@@ -74,6 +74,7 @@ run_pipeline:
 	dvc repro -f
 	git add dvc.lock
 	git commit -m "Reproduce DVC pipeline"
+	dvc push
 
 
 run_test_pipeline:
