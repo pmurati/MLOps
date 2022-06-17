@@ -174,19 +174,33 @@ For more information see the official [MLFlow docs](https://www.mlflow.org/docs/
 <details>
 <summary>Show/Hide</summary></br>
 
-- use best of both worlds
-- many possibilities (this is just intended as a showcase to demonstrate what is generally possible)
-- this demo will explore: git (code version control) + DVC (data version control + pipeline orchestration) + MLFlow (tracking/comparing + (future) deployment)
+DVc and MLFlow have some overlapping features as showcased in the previous sections. This demo will explore the combination of
+- git for code version control
+- DVC for data version control and pipeline orchestration
+- MLFlow for tracking/comparing runs and experiments (as well as deployment, see the section on [Future Deployment](#future-development))
+The intend of this project is to demonstrate one route of what is generally possible when combining different functionalities, as described in the following. 
 
-- nested runs on top of stages in pipeline: for comparison and better overview its useful to have params and artifacts associated with their respective stage (design choice)
-- set MLFLOW_RUN_ID as environmental variable
-- create decorator function, used on top of stages to be associated with the same run (by making use of MLFLOW_RUN_ID)
-- 
+An MLFLow experiment and a dedicated run can be setup on top of the data pipeline. They just have to be initialized before the first stage is triggered. With that, one is able to log whatever is considered to be necessary in the respective stage. Additionally, MLFLow has the option to create nested runs. For comparison and a better overview of the same stage in different runs, it might be useful to have parameters, artifacts, etc. associated with the stage they are coming from (this is a design choice, again for the sake of demonstrating the possibilities of these tools). 
 
+In the initialization step, the `MLFLOW_RUN_ID` is saved as an environmental variable. By setting an appropriate decorator functionon top of each stage, each part of the pipeline gets associated with the same run (by making use of `MLFLOW_RUN_ID`). Please refer to the code documentation [...]. For a more detailed explanation, see [Track DVC Pipeline Runs with MLFlow](https://www.sicara.fr/blog-technique/dvc-pipeline-runs-mlflow).
 
-Based on the following
-- [Track DVC Pipeline Runs with MLFlow](https://www.sicara.fr/blog-technique/dvc-pipeline-runs-mlflow)
-- [Data Versioning and Reproducible ML with DVC and MLFlow](https://databricks.com/fr/session_eu20/data-versioning-and-reproducible-ml-with-dvc-and-mlflow)
+Another hybrid use is the exploitation of DVC's strong alignment with git commands. Using the tagging functionality of git, we can assign different versions to our data (or better to our metadatafile `dvc.lock`, more on that in the next section). Then, by using the python dvc api, it is possible to specify the version tag and with that get the desired data into the particular stage of the pipeline. Now, MLFlow can just log the version tag as a parameter, instead of the whole data (which DVC takes care of). 
+
+The code will look something like this
+
+```bash
+data_url = dvc.api.get_url(path="path to dataset",
+            repo="path to repository",
+            rev="version tag"
+        )
+dataset = pd.read_csv(data_url, sep=',')
+
+# log data url and version tag in mlflow
+mlflow.log_param('data_url', data_url)
+mlflow.log_param('version', "version tag")
+```
+
+For more information on data versioning with DVc and MLFlow, see the video on [Data Versioning and Reproducible ML with DVC and MLFlow](https://databricks.com/fr/session_eu20/data-versioning-and-reproducible-ml-with-dvc-and-mlflow).
 
 </details>
 </p>
@@ -197,8 +211,38 @@ Based on the following
 <details>
 <summary>Show/Hide</summary></br>
 
-- init git and DVC repo
-- setup remote/cache/analytics 
+This section shows, how dvc is used in conjunction with git. First, initialize git and dvc with the following commands
+
+```bash
+git init
+dvc init
+git commit -m "initialize repo"
+```
+
+Two hidden folders are created. One for git and for DVC. Inside the .dvc folder lie some internal files and the config which will be altered next. By default, DVC recently started collecting anonymized usage analytics, so that the authors can better understand how their tool is used in order to improve it. It can be turned off by setting the analytics configuration option to false.
+
+```bash
+dvc config core.analytics false 
+git commit .dvc/config -m "configure analytics options"
+```
+
+Next, to set a remote storage for DVC use
+
+```bash
+mkdir -p $(REMOTE_PATH)
+dvc remote add -d dvc-remote $(REMOTE_PATH) -f
+git commit .dvc/config -m "configure remote storage"
+```
+
+In this example, the remote storage is set locally ad referenced by the name dvc-remote. For a cloud storage, additional authentication steps might be required. DVC saves data in its cache. It might come in handy to set up a remote cache. This is done via
+
+```bash
+mkdir -p $(CACHE_PATH)
+dvc cache dir $(CACHE_PATH)
+git commit .dvc/config -m "configure remote cache"
+```
+
+The changes done through the above executions can be seen in the rspective [config file](/.dvc/config).
 
 </details>
 </p>
@@ -208,6 +252,8 @@ Based on the following
 <p>
 <details>
 <summary>Show/Hide</summary></br>
+
+
 
 - explain dvc repro command
 - git tagging
