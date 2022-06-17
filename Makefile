@@ -9,12 +9,40 @@ PYTHON=python
 
 help:
 	@echo "Available Commands:"
-	@echo "init 		- Initialize git and dvc repository."
-	@echo "set_remote 	- Setup remote dvc repository."
-	@echo "set_cache 	- Setup remote dvc cache."
-	@echo "add_new		- Add new data file to dvc version control with version tag v1."
-	@echo "add_modified - Add modified data file to dvc version control and specify the version tag."
-	@echo "run_pipeline - Start new MLflow run each time the DVC pipeline is launched."
+	@echo "---------------------------------------------------------------------"
+	@echo "Package Installation"
+	@echo ""
+	@echo "install          - Install package dependencies."
+	@echo "dev_install      - Install package dependencies, including linting, formating and testing tools."
+	@echo "---------------------------------------------------------------------"
+	@echo "Coding Standards"
+	@echo ""
+	@echo "linting          - Apply isort, autopep8 and pydocstyle."
+	@echo "---------------------------------------------------------------------"
+	@echo "DVC & MLFlow Pipeline"
+	@echo ""
+	@echo "init             - Initialize git and dvc repository."
+	@echo "analytics_off    - Disable DVC analytics data collection."
+	@echo "set_remote       - Setup remote dvc repository."
+	@echo "set_cache        - Setup remote dvc cache."
+	@echo "init_remote      - Run commands: init, analytics_off, set_remote, set_cache."
+	@echo "run_pipeline     - Start new MLFlow run each time the DVC pipeline is launched. Do code and data versioning and add tag for reference."
+	@echo "run_pipeline_old - Older version of run_pipeline, without tagging."
+
+install:
+	python -m pip install --upgrade pip
+	pip install --upgrade pip setuptools wheel 
+	pip install -r requirements.txt
+
+dev_install:
+	python -m pip install --upgrade pip
+	pip install --upgrade pip setuptools wheel
+	pip install -r requirements-dev.txt
+
+linting:
+	isort src
+	autopep8 --in-place --recursive src/
+	pydocstyle --convention=google src/
 
 init:
 	git init
@@ -47,21 +75,6 @@ init_remote:
 	make set_remote	
 	make set_cache
 
-add_new:
-	dvc add $(DATA)
-	git add $(DATA_DIR).gitignore $(DATA).dvc
-	git commit -m "$(DATA): track"
-	git tag -a "v1" -m "raw data"
-	dvc push
-	git push --tags
-
-add_modified:
-	dvc commit $(DATA)
-	git add $(DATA).dvc
-	git commit -m "$(DATA): modified"
-	git tag -a "v$(V)" -m "modified data"
-	dvc push
-	git push --tags
 
 #MLFLOW_RUN_ID is not shared with dvc pipeline. Each line in a Makefile is a separate shell-process.
 #So shell-export does not work for several processes: One way to do it is to put them into one line
@@ -70,14 +83,6 @@ add_modified:
 #see this stackoverflow post:
 #https://stackoverflow.com/questions/6995107/why-exported-variables-in-makefile-is-not-received-by-executable#6995160
 run_pipeline:
-	MLFLOW_RUN_ID=`$(PYTHON) ./src/utils/start_pipeline.py --config=$(CONFIG)$  --run_name=$(RUN_NAME)` \
-	dvc repro -f
-	git add dvc.lock
-	git commit -m "Reproduce DVC pipeline"
-	dvc push
-
-
-run_test_pipeline:
 	MLFLOW_RUN_ID=`$(PYTHON) ./src/utils/start_pipeline.py --config=$(CONFIG)$  --run_name=$(RUN_NAME)` \
 	dvc repro -f 
 	git add --all
@@ -88,10 +93,9 @@ run_test_pipeline:
 #	git push origin --tags
 	dvc push
 
-#Continue here !!!
-#try to add this functionality: add version tag automatically when difference in inptut (raw) data
-#is detected during first stage of the pipeline. Give the option in the params.yaml file to select
-#different versions of data and save it as a parameter in mlflow
-checkout:
-	git checkout $(V) -- dvc.lock
-	dvc checkout $(DATA)
+run_pipeline_old:
+	MLFLOW_RUN_ID=`$(PYTHON) ./src/utils/start_pipeline.py --config=$(CONFIG)$  --run_name=$(RUN_NAME)` \
+	dvc repro -f
+	git add dvc.lock
+	git commit -m "Reproduce DVC pipeline"
+	dvc push

@@ -1,9 +1,11 @@
+"""Module for the data split stage."""
 import argparse
-import pandas as pd
-from sklearn.model_selection import train_test_split
 from typing import Text
-import yaml
+
 import mlflow
+import pandas as pd
+import yaml
+from sklearn.model_selection import train_test_split
 
 from src.utils.logs import get_logger
 from src.utils.mlflow_run_decorator import mlflow_run
@@ -11,11 +13,11 @@ from src.utils.mlflow_run_decorator import mlflow_run
 
 @mlflow_run
 def data_split(config_path: Text) -> None:
-    """Split dataset into train/test.
-    Args:
-        config_path {Text}: path to config
-    """
+    """Split the featurized dataset into train/test.
 
+    Args:
+        config_path (Text): path to config
+    """
     with open(config_path) as conf_file:
         config = yaml.safe_load(conf_file)
 
@@ -37,7 +39,7 @@ def data_split(config_path: Text) -> None:
     train_dataset.to_csv(train_csv_path, index=False)
     test_dataset.to_csv(test_csv_path, index=False)
 
-    mlflow.log_param('test_size',config['featurize']['features_path'])
+    mlflow.log_param('test_size', config['featurize']['features_path'])
 
 
 if __name__ == '__main__':
@@ -47,4 +49,3 @@ if __name__ == '__main__':
     args = args_parser.parse_args()
 
     data_split(config_path=args.config)
-    

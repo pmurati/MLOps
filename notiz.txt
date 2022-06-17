@@ -1,1 +1,11 @@
 REMOTE DVC: bei VTG S3 bucket
+Wie flexibel ist man in der Gestalltung des Enpoints?
+
+Recherche Deployment: Wie kann man MLFlow Modelle mit Sagemaker AWS deployen/integrieren?
+
+Übergang EDA -> Projekt (wie kann man das vorher schon in einem EDA Rahmen nutzen? Wie findet man am besten den Übergang?)
+
+Erste TODOs:
+Code auf DEVnet GitLab hochladen (besorge Account)
+Code Dokumentieren
+Präsi vorbereiten (Allgemein und speziell auf VTG ausgerichtet)

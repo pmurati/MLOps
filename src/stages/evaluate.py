@@ -1,13 +1,15 @@
+"""Module for evaluation stage of trained model."""
 import argparse
-import joblib
 import json
-import pandas as pd
 from pathlib import Path
+from typing import Dict, Text
+
+import joblib
+import mlflow
+import pandas as pd
+import yaml
 from sklearn.datasets import load_iris
 from sklearn.metrics import confusion_matrix, f1_score
-from typing import Text, Dict
-import yaml
-import mlflow
 
 from src.report.visualize import plot_confusion_matrix
 from src.utils.logs import get_logger
@@ -16,11 +18,15 @@ from src.utils.mlflow_run_decorator import mlflow_run
 
 @mlflow_run
 def evaluate_model(config_path: Text) -> None:
-    """Evaluate model.
-    Args:
-        config_path {Text}: path to config
-    """
+    """Evaluate the trained model.
 
+       Load the trained model and the test set via the path specification in
+       the config file. Do the prediction on the test set, compute its f1 score 
+       and plot the confusion matrix. Both are saved in the reports folder.
+
+    Args:
+        config_path (Text): path to config
+    """
     with open(config_path) as conf_file:
         config = yaml.safe_load(conf_file)
 
@@ -34,7 +40,7 @@ def evaluate_model(config_path: Text) -> None:
     test_df = pd.read_csv(config['data_split']['testset_path'])
 
     logger.info('Evaluate (build report)')
-    target_column=config['featurize']['target_column']
+    target_column = config['featurize']['target_column']
     y_test = test_df.loc[:, target_column].values
     X_test = test_df.drop(target_column, axis=1).values
 
@@ -63,14 +69,16 @@ def evaluate_model(config_path: Text) -> None:
     logger.info('Save confusion matrix')
     # save confusion_matrix.png
     plt = plot_confusion_matrix(cm=report['cm'],
-                                target_names=load_iris(as_frame=True).target_names.tolist(),
+                                target_names=load_iris(
+                                    as_frame=True).target_names.tolist(),
                                 normalize=False)
-    confusion_matrix_png_path = reports_folder / config['evaluate']['confusion_matrix_image']
+    confusion_matrix_png_path = reports_folder / \
+        config['evaluate']['confusion_matrix_image']
     plt.savefig(confusion_matrix_png_path)
     logger.info(f'Confusion matrix saved to : {confusion_matrix_png_path}')
 
-    mlflow.log_metric('f1_test',report['f1'])
-    #mlflow.log_figure(plt,confusion_matrix_png_path)
+    mlflow.log_metric('f1_test', report['f1'])
+    # mlflow.log_figure(plt,confusion_matrix_png_path)
 
 
 if __name__ == '__main__':
@@ -80,4 +88,3 @@ if __name__ == '__main__':
     args = args_parser.parse_args()
 
     evaluate_model(config_path=args.config)
-    

@@ -1,48 +1,41 @@
+"""
+Module for visualization of confusion matrix, that is part of the report
+produced by the pipeline.
+"""
 import itertools
+from typing import List, Text
+
 import matplotlib.colors
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import List, Text
 
 
 def plot_confusion_matrix(cm: np.array,
                           target_names: List[Text],
                           title: Text = 'Confusion matrix',
                           cmap: matplotlib.colors.LinearSegmentedColormap = None,
-                          normalize: bool = True):
-    """
-    given a sklearn confusion matrix (cm), make a nice plot
+                          normalize: bool = True) -> plt.figure:
+    """Given a sklearn confusion matrix (cm), make a plot.
 
-    Arguments
-    ---------
-    cm:           confusion matrix from sklearn.metrics.confusion_matrix
+       Usage:
+       plot_confusion_matrix(cm = cm, normalize = True, target_names = y_labels_vals, title = best_estimator_name)
 
-    target_names: given classification classes such as [0, 1, 2]
-                  the class names, for example: ['high', 'medium', 'low']
+        Citation:
+        http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
 
-    title:        the text to display at the top of the matrix
-
-    cmap:         the gradient of the values displayed from matplotlib.pyplot.cm
+    Args:
+        cm (np.array): confusion matrix from sklearn.metrics.confusion_matrix
+        target_names (List[Text]): given classification classes such as [0, 1, 2] 
+                                   the class names, for example: ['high', 'medium', 'low']
+        title (Text, optional): the text to display at the top of the matrix. Defaults to 'Confusion matrix'.
+        cmap (matplotlib.colors.LinearSegmentedColormap, optional): the gradient of the values displayed from matplotlib.pyplot.cm
                   see http://matplotlib.org/examples/color/colormaps_reference.html
-                  plt.get_cmap('jet') or plt.cm.Blues
+                  plt.get_cmap('jet') or plt.cm.Blues. Defaults to None.
+        normalize (bool, optional): If False, plot the raw numbers. If True, plot the proportions. Defaults to True.
 
-    normalize:    If False, plot the raw numbers
-                  If True, plot the proportions
-
-    Usage
-    -----
-    plot_confusion_matrix(cm           = cm,                  # confusion matrix created by
-                                                              # sklearn.metrics.confusion_matrix
-                          normalize    = True,                # show proportions
-                          target_names = y_labels_vals,       # list of names of the classes
-                          title        = best_estimator_name) # title of graph
-
-    Citiation
-    ---------
-    http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
-
+    Returns:
+        plt.gfc (plt.figure): plotted confusion matrix
     """
-
     accuracy = np.trace(cm) / float(np.sum(cm))
     misclass = 1 - accuracy
 
@@ -75,6 +68,7 @@ def plot_confusion_matrix(cm: np.array,
 
     plt.tight_layout()
     plt.ylabel('True label')
-    plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
+    plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(
+        accuracy, misclass))
 
     return plt.gcf()

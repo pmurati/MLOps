@@ -1,9 +1,11 @@
+"""Module for the training stage."""
 import argparse
-import joblib
-import pandas as pd
 from typing import Text
-import yaml
+
+import joblib
 import mlflow
+import pandas as pd
+import yaml
 
 from src.train.train import train
 from src.utils.logs import get_logger
@@ -13,10 +15,20 @@ from src.utils.mlflow_run_decorator import mlflow_run
 @mlflow_run
 def train_model(config_path: Text) -> None:
     """Train model.
-    Args:
-        config_path {Text}: path to config
-    """
 
+       Train the model on the train set. Get the path to the data and the
+       parametrization for the model used from the config.
+
+       This stage uses a helper function that does a GridSearchCV,
+       with the intend of further modularization and higher flexibility of
+       this script. 
+
+       The best model is saved to the models directory as a joblib file.
+       In addition, the model is logged via mlflow. 
+
+    Args:
+        config_path (Text): path to config
+    """
     with open(config_path) as conf_file:
         config = yaml.safe_load(conf_file)
 
@@ -48,7 +60,7 @@ def train_model(config_path: Text) -> None:
     mlflow.log_metric('F1', model.best_score_)
 
     mlflow.sklearn.log_model(model, 'model')
-    
+
 
 if __name__ == '__main__':
 
@@ -57,4 +69,3 @@ if __name__ == '__main__':
     args = args_parser.parse_args()
 
     train_model(config_path=args.config)
-    

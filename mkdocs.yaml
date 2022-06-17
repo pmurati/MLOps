@@ -1,0 +1,20 @@
+site_name: MLOps Source Code
+site_description: A quick overview of the source code, used in the MLOps Pipeline.
+
+theme:
+ name: "material"
+ palette:
+  primary: "black"
+  accent: "grey"
+
+plugins:
+ - search
+ - mkdocstrings
+
+markdown_extensions:
+ - pymdownx.highlight
+ - pymdownx.superfences
+
+nav:
+ - "Start": index.md
+ - "API": api.md

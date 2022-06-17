@@ -1,18 +1,18 @@
 """Provides functions to create loggers."""
-
 import logging
-from typing import Text, Union
 import sys
+from typing import Text, Union
 
 
 def get_console_handler() -> logging.StreamHandler:
     """Get console handler.
-    Returns:
-        logging.StreamHandler which logs into stdout
-    """
 
+    Returns:
+        logging.StreamHandler: log into stdout
+    """
     console_handler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s — %(name)s — %(levelname)s — %(message)s")
     console_handler.setFormatter(formatter)
 
     return console_handler
@@ -20,13 +20,14 @@ def get_console_handler() -> logging.StreamHandler:
 
 def get_logger(name: Text = __name__, log_level: Union[Text, int] = logging.DEBUG) -> logging.Logger:
     """Get logger.
-    Args:
-        name {Text}: logger name
-        log_level {Text or int}: logging level; can be string name or integer value
-    Returns:
-        logging.Logger instance
-    """
 
+    Args:
+        name (Text, optional): logger name. Defaults to __name__.
+        log_level (Union[Text, int], optional): logging level; can be string name or integer value. Defaults to logging.DEBUG.
+
+    Returns:
+        logging.Logger: logger instance
+    """
     logger = logging.getLogger(name)
     logger.setLevel(log_level)
 

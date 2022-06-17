@@ -1,10 +1,12 @@
+"""Contains the submodule for training the model. Consider adding more options."""
+from typing import Dict, Text
+
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score, make_scorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from sklearn.metrics import f1_score, make_scorer
-from typing import Dict, Text
 
 
 class UnsupportedClassifier(Exception):
@@ -16,11 +18,11 @@ class UnsupportedClassifier(Exception):
 
 
 def get_supported_estimator() -> Dict:
-    """
+    """Return a list of supported classifiers.
+
     Returns:
         Dict: supported classifiers
     """
-
     return {
         'logreg': LogisticRegression,
         'svm': SVC,
@@ -30,17 +32,26 @@ def get_supported_estimator() -> Dict:
 
 def train(df: pd.DataFrame, target_column: Text,
           estimator_name: Text, param_grid: Dict,  cv: int):
-    """Train model.
-    Args:
-        df {pandas.DataFrame}: dataset
-        target_column {Text}: target column name
-        estimator_name {Text}: estimator name
-        param_grid {Dict}: grid parameters
-        cv {int}: cross-validation value
-    Returns:
-        trained model
-    """
+    """Train model via GridSearchCV.
 
+       First, check if the estimator handed to this function is supported by the
+       GridSearchCV subroutine. If so, do the gridsearch and return the fitted
+       object.
+
+    Args:
+        df (pd.DataFrame): dataset
+        target_column (Text): target column name
+        estimator_name (Text): estimator name
+        param_grid (Dict): grid parameters
+        cv (int): cross-validation value
+
+    Raises:
+        UnsupportedClassifier: Raise an error if estimator is not supported by 
+                               this train routine.
+
+    Returns:
+        clf (sklearn.grid_search): trained model
+    """
     estimators = get_supported_estimator()
 
     if estimator_name not in estimators.keys():
