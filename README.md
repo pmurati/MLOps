@@ -30,7 +30,7 @@ This repository demonstrates a composite framework for data pipeline and version
 - [images](/images/) : images used in this README
 - [models](/models/) : contains **model.joblib** file (output from the training stage); DVC automatically creates a .gotignore file for the model
 - [reports](/reports/) : contains the **metrics.json** with the resulting metrics and confusion matrix plot **confusion_matrix.png** on the test set (output from evaluation stage)
-- [site](/site/) : MkDocs documentation
+- [site](/site/) : MkDocs documentation, found [here](https://pmurati.github.io/MLOps/)
 - [src](/src/) : contains the source code
   - [report](src/report/) : folder containing **visualizing.py** for creation of confusion matrix plot 
   - [stages](/src/stages/) : folder containg the different python functions associated with the different stages in the pipeline, namely **data_load.py** for loading the data, **featurize.py** for feature engineering, **data_split.py** for splitting the data into train and test sets, **train.py** for training the model on the train set and **evaluate.py** for evaluating the trained model on the test set  
@@ -179,7 +179,7 @@ The intend of this project is to demonstrate one route of what is generally poss
 
 An MLFLow experiment and a dedicated run can be setup on top of the data pipeline. They just have to be initialized before the first stage is triggered. With that, one is able to log whatever is considered to be necessary in the respective stage. Additionally, MLFLow has the option to create nested runs. For comparison and a better overview of the same stage in different runs, it might be useful to have parameters, artifacts, etc. associated with the stage they are coming from (this is a design choice, again for the sake of demonstrating the possibilities of these tools). 
 
-In the initialization step, the `MLFLOW_RUN_ID` is saved as an environmental variable. By setting an appropriate decorator function on top of each stage, each part of the pipeline gets associated with the same run (by making use of `MLFLOW_RUN_ID`). Please refer to the code documentation [...]. For a more detailed explanation, see [Track DVC Pipeline Runs with MLFlow](https://www.sicara.fr/blog-technique/dvc-pipeline-runs-mlflow).
+In the initialization step, the `MLFLOW_RUN_ID` is saved as an environmental variable. By setting an appropriate decorator function on top of each stage, each part of the pipeline gets associated with the same run (by making use of `MLFLOW_RUN_ID`). Please refer to the [code documentation](https://pmurati.github.io/MLOps/api/#initializing-the-nested-mlflow-run). For a more detailed explanation, see [Track DVC Pipeline Runs with MLFlow](https://www.sicara.fr/blog-technique/dvc-pipeline-runs-mlflow).
 
 Another hybrid use is the exploitation of DVC's strong alignment with git commands. Using the tagging functionality of git, we can assign different versions to our data (or better to our metadatafile `dvc.lock`, more on that in the next section). Then, by using the python dvc api, it is possible to specify the version tag and with that get the desired data into the particular stage of the pipeline. Now, MLFlow can just log the version tag as a parameter, instead of the whole data (which DVC takes care of). 
 
