@@ -1,6 +1,6 @@
 # MLOps Demo
 
-Short description of repo.
+This repository demosntrates a composite framework for data pipeline and version orchestration as well tracking and model comparison, using a combination of tools like git, DVC and MLFlow.
 
 # Table of Contents
 
@@ -8,7 +8,6 @@ Short description of repo.
 - [Table of Contents](#table-of-contents)
 - [File Descriptions](#file-descriptions)
 - [Technologies Used](#technologies-used)
-- [Structure](#structure)
 - [Executive Summary](#executive-summary)
   - [Goal](#goal)
   - [DVC](#dvc)
@@ -57,13 +56,11 @@ Short description of repo.
 <p>
 <details>
 <summary>Show/Hide</summary></br>
-Details
+
+The user should be proficient with python programming, especially with the most common data science libraries: pandas, sklearn, matplotlib, to name a few. The user should be familiar with joblib, yaml and json files. In order to understand the functioning of the two tools presented in this demo, namely DVC and MLFlow, it is necessary to have some knowledge about git version control. Finally, being familiar with makefiles will come in handy for using this repo's make commands.
+
 </details>
 </p>
-
-# Structure
-
-
 
 <p>
 <details>
@@ -182,7 +179,7 @@ The intend of this project is to demonstrate one route of what is generally poss
 
 An MLFLow experiment and a dedicated run can be setup on top of the data pipeline. They just have to be initialized before the first stage is triggered. With that, one is able to log whatever is considered to be necessary in the respective stage. Additionally, MLFLow has the option to create nested runs. For comparison and a better overview of the same stage in different runs, it might be useful to have parameters, artifacts, etc. associated with the stage they are coming from (this is a design choice, again for the sake of demonstrating the possibilities of these tools). 
 
-In the initialization step, the `MLFLOW_RUN_ID` is saved as an environmental variable. By setting an appropriate decorator functionon top of each stage, each part of the pipeline gets associated with the same run (by making use of `MLFLOW_RUN_ID`). Please refer to the code documentation [...]. For a more detailed explanation, see [Track DVC Pipeline Runs with MLFlow](https://www.sicara.fr/blog-technique/dvc-pipeline-runs-mlflow).
+In the initialization step, the `MLFLOW_RUN_ID` is saved as an environmental variable. By setting an appropriate decorator function on top of each stage, each part of the pipeline gets associated with the same run (by making use of `MLFLOW_RUN_ID`). Please refer to the code documentation [...]. For a more detailed explanation, see [Track DVC Pipeline Runs with MLFlow](https://www.sicara.fr/blog-technique/dvc-pipeline-runs-mlflow).
 
 Another hybrid use is the exploitation of DVC's strong alignment with git commands. Using the tagging functionality of git, we can assign different versions to our data (or better to our metadatafile `dvc.lock`, more on that in the next section). Then, by using the python dvc api, it is possible to specify the version tag and with that get the desired data into the particular stage of the pipeline. Now, MLFlow can just log the version tag as a parameter, instead of the whole data (which DVC takes care of). 
 
@@ -253,12 +250,36 @@ The changes done through the above executions can be seen in the rspective [conf
 <details>
 <summary>Show/Hide</summary></br>
 
+Assuming that a `dvc.yaml` file has been created, the one-liner 
 
+```bash
+dvc repro
+```
 
-- explain dvc repro command
-- git tagging
-- git/dvc checkout
-- dvc.api
+suffices to run each step in the pipeline and save the data via DVC version control in the form of a `dvc.lock` file that is created during run time. DVC checks for changes in each stage and only updates the ones where it detects changes in the code (in the following the force flag -f is used to always perform each stage). 
+
+In order to perform the composite DVC-MLFlow framework, we have to alter this command
+
+```bash
+MLFLOW_RUN_ID=`python ./src/utils/start_pipeline.py --config=params.yaml  --run_name=$(RUN_NAME)` \
+	dvc repro -f
+```
+As mentioned in [this](#a-combined-approach) section, we have to specify an environment variable for the nested tracking logic to work. This is returned by the experiment- and run-initiation script [start_pipeline.py](/src/utils/start_pipeline.py), which takes the `params.yaml` file and a speecified run name as input. Given that, the pipeline is triggered. The pipeline will create .gitignore files for all dependency files and output data, as well as the .lock file. Both shall be added to git version control and commited to both git and DVC.
+
+```bash
+git add --all
+git commit -m "Reproduce DVC pipeline"
+dvc commit
+```
+
+Finally, to ensure that the data is versioned (such that MLFlow can save the tag as a parameter) we include a git tag und push the changes to DVC.
+
+```bash
+git tag -a $(TAG) -m "Some meaningful message"
+dvc push
+```
+
+>Keep in mind that additional steps are needed such as `git push origin --tags`, when synchronizing with a remote git repo (origin).
 
 </details>
 </p>
@@ -269,7 +290,15 @@ The changes done through the above executions can be seen in the rspective [conf
 <details>
 <summary>Show/Hide</summary></br>
 
-- mlflow ui
+The results of running the pipeline can be seen in the MLFLow UI, via
+
+```bash
+mlflow ui
+```
+
+![MLFlow UI](/images/MLFLow_UI.png)
+
+Each row represents one run. There are distinct columns per tracked parameter and metric. Each run can be expanded to show all the nested runs, named after their stage. Different runs can be compared with respect to parameters and metrics and the logged models can be shared and made available for further usage. 
 
 </details>
 </p>
@@ -280,12 +309,14 @@ The changes done through the above executions can be seen in the rspective [conf
 <details>
 <summary>Show/Hide</summary></br>
 
-- use remote dvc cache/storage on cloud
+To conclude, here is a list with further steps that build on the existing framework:
+
+- setup a remote dvc cache/storage on cloud
 - setup MLFlow tracking server
-- more model options
-- test practicality of nested mlflow runs
-- integrate automated deployment of endpoint for model
-- moniotring
+- include more model options, i.e. conceptualize a more modularized approach 
+- test the practicality of nested mlflow runs
+- integrate automated deployment of endpoints for the models (via MLFlow)
+- include monitoring of model performance
 
 </details>
 </p>

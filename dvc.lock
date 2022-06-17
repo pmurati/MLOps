@@ -4,8 +4,8 @@ stages:
     cmd: python -m src.stages.data_load --config=params.yaml
     deps:
     - path: src/stages/data_load.py
-      md5: b1787d24a1a09f355ade9e8ef1bf9cb1
-      size: 1770
+      md5: a6aa738183174c39025a57cc0b839908
+      size: 2070
     params:
       params.yaml:
         base:
@@ -28,8 +28,8 @@ stages:
       md5: 4224576f0267bf88902f87f0f6200967
       size: 2908
     - path: src/stages/featurize.py
-      md5: f25b21b5861c48cecfde7448aa364aa8
-      size: 1483
+      md5: 6dfbb414cf9f361f23dd58edd56e33ff
+      size: 1591
     params:
       params.yaml:
         base:
@@ -55,8 +55,8 @@ stages:
       md5: 5d03a1564b3038fc35a842f8e4bde491
       size: 7411
     - path: src/stages/data_split.py
-      md5: 6e06c1313f1b4a5737d4bacec93a7b25
-      size: 1503
+      md5: a54b34f01a1f1c6781637b39742c08d6
+      size: 1557
     params:
       params.yaml:
         base:
@@ -84,8 +84,8 @@ stages:
       md5: ed8a7e5ba0a211251bdee6c498fe3eb4
       size: 5845
     - path: src/stages/train.py
-      md5: e371ce4d221cb613f83f2b66b83be2a7
-      size: 1736
+      md5: 29d7c6e3ecfadbcccb904664ab8bdd69
+      size: 2203
     params:
       params.yaml:
         base:
@@ -124,7 +124,7 @@ stages:
           model_path: models/model.joblib
     outs:
     - path: models/model.joblib
-      md5: caf25a75c5e04f530fa3f58ee2cc6186
+      md5: e08661d4d0cf3ff424ca51ea1fb338cd
       size: 2668
   evaluate:
     cmd: python -m src.stages.evaluate --config=params.yaml
@@ -133,11 +133,11 @@ stages:
       md5: b5e45593a772fc66629488e1806505c4
       size: 1523
     - path: models/model.joblib
-      md5: caf25a75c5e04f530fa3f58ee2cc6186
+      md5: e08661d4d0cf3ff424ca51ea1fb338cd
       size: 2668
     - path: src/stages/evaluate.py
-      md5: ec76ace21f48fde5efe234a7bafce5a8
-      size: 2625
+      md5: 27b5f8ed122a3c39b5268b98683c6600
+      size: 2980
     params:
       params.yaml:
         base:
