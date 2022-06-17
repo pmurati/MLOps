@@ -1,6 +1,6 @@
 # MLOps Demo
 
-This repository demosntrates a composite framework for data pipeline and version orchestration as well tracking and model comparison, using a combination of tools like git, DVC and MLFlow.
+This repository demonstrates a composite framework for data pipeline and version orchestration as well tracking and model comparison, using a combination of tools like git, DVC and MLFlow.
 
 # Table of Contents
 
