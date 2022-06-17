@@ -62,13 +62,6 @@ The user should be proficient with python programming, especially with the most 
 </details>
 </p>
 
-<p>
-<details>
-<summary>Show/Hide</summary></br>
-Details
-</details>
-</p>
-
 # Executive Summary
 
 ## Goal
